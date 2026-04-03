@@ -1,5 +1,24 @@
 import './App.css';
-import { Plus, Search, Funnel } from 'lucide-react';
+import { 
+  Plus, 
+  Search, 
+  Funnel,
+  Pencil,
+  X
+} from 'lucide-react';
+
+import clsx from 'clsx';
+
+
+type TaskCategories = "personal" | "work" | "shopping" | "health";
+type TaskPriority = "low" | "medium" | "high";
+
+interface TaskPros {
+  isDone: boolean;
+  title: string;
+  category: TaskCategories;
+  priority: TaskPriority;
+}
 
 
 function Header() {
@@ -104,7 +123,7 @@ function AddForm() {
 function SearchForm() {
   
   return (
-    <form action="">
+    <form action="" className='mb-6'>
       <search className='flex items-center gap-4'>
         <div 
           className='flex items-center gap-1 flex-1 bg-gray-200 p-2 rounded-md
@@ -136,9 +155,116 @@ function SearchForm() {
         </div>
       </search>
     </form>
-  )
+  );
 }
 
+
+function Task({
+  isDone,
+  title,
+  category,
+  priority
+}: TaskPros) {
+
+  let priorityText: string;
+  let categorieText: string;
+
+  // Restriction des priorité
+  switch (priority) {
+    case "high":
+      priorityText = "Elevée";
+      break;
+
+    case "low":
+      priorityText = "Faible";
+      break;
+    
+    case "medium":
+      priorityText = "Moyenne";
+      break;
+  
+    default:
+      priorityText = "";
+      break;
+  }
+
+  // Restriction des categories
+  switch (category) {
+    case "health":
+      categorieText = "Santé";
+      break;
+
+    case "personal":
+      categorieText = "Personnel";
+      break;
+    
+    case "shopping":
+      categorieText = "Course";
+      break;
+
+    case "work":
+      categorieText = "Travail";
+      break;
+  
+    default:
+      categorieText = "";
+      break;
+  }
+  
+  return (
+    <>
+      <form 
+        action=""
+        className='bg-white border border-gray-400 p-3 rounded-xl'
+      >
+        <article className='flex justify-between items-center'>
+          <div className='flex items-center gap-6'>
+            <div>
+              <input 
+                type="checkbox" 
+                name="doneTask" 
+                id="doneTask" 
+                checked={isDone}
+                className='w-5 h-5'
+              />
+            </div>
+
+            <div>
+              <h2 className='text-lg mb-3'>{title}</h2>
+              <div className='flex items-center gap-4'>
+                <span 
+                  className='text-xs font-semibold border 
+                  border-gray-300 px-2 py-1 rounded-2xl'
+                >
+                  {categorieText}
+                </span>
+                <span 
+                  className={clsx(
+                    `text-xs font-semibold border px-2 py-1 rounded-2xl`,
+                    priority === "medium" && "text-yellow-900 bg-yellow-100 border-yellow-300",
+                    priority === "low" && "text-green-900 bg-green-100 border-green-300",
+                    priority === "high" && "text-red-900 bg-red-100 border-red-300",
+                  )}
+                >
+                  {priorityText}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div className='flex items-center gap-2'>
+            <button className='p-2 rounded-sm hover:bg-gray-300 cursor-pointer'>
+              <Pencil size={20} className='font-semibold'  />
+            </button>
+            <button className='p-2 rounded-sm hover:bg-gray-300 cursor-pointer'>
+              <X size={20} className='font-semibold text-red-600' />
+            </button>
+          </div>
+        </article>
+      </form>
+    </>
+  )
+}
 
 function App() {
   
@@ -149,9 +275,31 @@ function App() {
         <Header  />
         <AddForm  />
         <SearchForm  />
+        <div>
+          <Task  
+            isDone={false}
+            title="Creation  d'une App de gestion des taches"
+            category="health"
+            priority="high"
+          />
+
+          <Task  
+            isDone={false}
+            title="Creation  d'une App de gestion des taches"
+            category="personal"
+            priority="medium"
+          />
+
+          <Task  
+            isDone={false}
+            title="Creation  d'une App de gestion des taches"
+            category="shopping"
+            priority="low"
+          />
+        </div>
       </div>
     </main>
-  )
+  );
 }
 
 export default App;
