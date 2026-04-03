@@ -1,5 +1,5 @@
 import './App.css';
-import { Plus } from 'lucide-react';
+import { Plus, Search, Funnel } from 'lucide-react';
 
 
 function Header() {
@@ -31,7 +31,7 @@ function AddForm() {
   return (
     <form 
       action=""
-      className='bg-white border border-gray-400 p-6 rounded-xl'
+      className='bg-white border border-gray-400 p-6 rounded-xl mb-8'
     >
       <div>
         <div className='flex items-center gap-4 mb-4'>
@@ -101,14 +101,54 @@ function AddForm() {
 }
 
 
+function SearchForm() {
+  
+  return (
+    <form action="">
+      <search className='flex items-center gap-4'>
+        <div 
+          className='flex items-center gap-1 flex-1 bg-gray-200 p-2 rounded-md
+          focus-within:ring-2 focus-within:ring-indigo-400'
+        >
+          <span>
+            <Search size={20} className='text-gray-500'  />
+          </span>
+          <input 
+            type="search" 
+            name="taskSearch" 
+            id="taskSearch" 
+            placeholder='Rechercher des tâches...'
+            className='w-full outline-none'
+          />
+        </div>
+
+        <div className='flex items-center gap-3'>
+          <span>
+            <Funnel size={20} className='text-gray-500' />
+          </span>
+          <select name="filter" id="filter" className='p-1 border border-gray-400 rounded-md'>
+            <option value="allCategories">Toutes les categories</option>
+            <option value="personal">Personnel</option>
+            <option value="work">Travail</option>
+            <option value="shopping">Courses</option>
+            <option value="health">Santé</option>
+          </select>
+        </div>
+      </search>
+    </form>
+  )
+}
+
+
 function App() {
   
 
   return (
-    <main className='bg-blue-50 min-h-dvh py-6'>
+    <main className='bg-slate-50 min-h-dvh py-6'>
       <div className="container">
         <Header  />
         <AddForm  />
+        <SearchForm  />
       </div>
     </main>
   )
