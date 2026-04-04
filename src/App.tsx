@@ -4,7 +4,8 @@ import {
   Search, 
   Funnel,
   Pencil,
-  X
+  X,
+  Check
 } from 'lucide-react';
 
 import clsx from 'clsx';
@@ -13,9 +14,9 @@ import clsx from 'clsx';
 type TaskCategories = "personal" | "work" | "shopping" | "health";
 type TaskPriority = "low" | "medium" | "high";
 
-interface TaskPros {
+interface Todo {
   isDone: boolean;
-  title: string;
+  text: string;
   category: TaskCategories;
   priority: TaskPriority;
 }
@@ -161,10 +162,10 @@ function SearchForm() {
 
 function Task({
   isDone,
-  title,
+  text,
   category,
   priority
-}: TaskPros) {
+}: Todo) {
 
   let priorityText: string;
   let categorieText: string;
@@ -215,7 +216,7 @@ function Task({
     <>
       <form 
         action=""
-        className='bg-white border border-gray-400 p-3 rounded-xl'
+        className='bg-white border border-gray-400 px-3 py-6 rounded-xl'
       >
         <article className='flex justify-between items-center'>
           <div className='flex items-center gap-6'>
@@ -230,7 +231,7 @@ function Task({
             </div>
 
             <div>
-              <h2 className='text-lg mb-3'>{title}</h2>
+              <p className='mb-3'>{text}</p>
               <div className='flex items-center gap-4'>
                 <span 
                   className='text-xs font-semibold border 
@@ -266,37 +267,93 @@ function Task({
   )
 }
 
-function App() {
+
+function ProgressBar({ progress = 0 }: { progress: number | string}) {
   
+  return (
+    <form 
+      action="" 
+      className='bg-white border border-gray-400 px-3 py-6 rounded-xl'
+    >
+      <div>
+        <div className="flex items-center justify-between mb-3">
+          <span className="text-sm font-medium text-gray-600">
+            Avancement
+          </span>
+          <span className="text-sm font-semibold text-gray-800">
+            {progress}%
+          </span>
+        </div>
+
+        <div className="w-full bg-gray-200 h-2 rounded-full overflow-hidden">
+          <div
+            className="h-full bg-linear-to-r from-indigo-500 to-pink-500 transition-all duration-300"
+            style={{ width: `${progress}%` }}
+          />
+        </div>
+      </div>
+    </form>
+  )
+}
+
+function EmptySate({ 
+  message }: { message: string}
+) {
+  
+  return (
+    <div 
+      className='bg-white border border-gray-400 rounded-xl 
+      flex flex-col items-center justify-center gap-2 py-12'
+    >
+      <div className='bg-gray-300 w-20 h-20 rounded-full flex items-center justify-center'>
+        <Check size={48} className='text-gray-500'  />
+      </div>
+      <h3 className='text-gray-600'>Aucune tâche trouvée</h3>
+      <p className='text-gray-600'>{message}</p>
+    </div>
+  )
+}
+
+function App() {
 
   return (
     <main className='bg-slate-50 min-h-dvh py-6'>
       <div className="container">
-        <Header  />
-        <AddForm  />
-        <SearchForm  />
         <div>
-          <Task  
-            isDone={false}
-            title="Creation  d'une App de gestion des taches"
-            category="health"
-            priority="high"
-          />
-
-          <Task  
-            isDone={false}
-            title="Creation  d'une App de gestion des taches"
-            category="personal"
-            priority="medium"
-          />
-
-          <Task  
-            isDone={false}
-            title="Creation  d'une App de gestion des taches"
-            category="shopping"
-            priority="low"
-          />
+          <Header  />
+          <AddForm  />
+          <SearchForm  />
         </div>
+        <div>
+          <div className='flex flex-col gap-3 mb-6'>
+            <Task  
+              isDone={false}
+              text="Creation  d'une App de gestion des taches"
+              category="health"
+              priority="high"
+            />
+
+            <Task  
+              isDone={false}
+              text="Creation  d'une App de gestion des taches"
+              category="personal"
+              priority="medium"
+            />
+
+            <Task  
+              isDone={false}
+              text="Creation  d'une App de gestion des taches"
+              category="shopping"
+              priority="low"
+            />
+          </div>
+
+          <div>
+            <ProgressBar progress={33}  />
+          </div>
+        </div>
+
+        {/* <EmptySate message="Ajoutez votre première tâche pour commencer !"  /> */}
       </div>
     </main>
   );
