@@ -23,11 +23,17 @@ interface Todo {
 }
 
 interface TaskProps extends Todo {
-   onTaskfinish: (id: number) => void;
+  onTaskfinish: (id: number) => void;
+  onDelete: (id: number) => void;
 }
 
 
-function Header() {
+function Header({ 
+  completedTaskNumber, 
+  totalTasksNumber
+}: { completedTaskNumber: number, 
+  totalTasksNumber: number
+}) {
   
   return (
     <header className='mb-8'>
@@ -42,7 +48,11 @@ function Header() {
           Organisez-vous et restez productif
         </p>
         <p className='text-gray-500 text-lg'>
-          <span>1 tâche terminée <span className='font-extrabold'>.</span> 2 tâches au total </span>
+          <span>
+            {`${completedTaskNumber} ${completedTaskNumber <= 1 ? "tâche terminée" : "tâches terminées"}`} 
+            <span className='font-extrabold mx-2'>.</span>   
+            {`${totalTasksNumber} ${totalTasksNumber <= 1 ? "tâche au total " : "tâches au total "}`} 
+          </span>
         </p>
       </div>
     </header>
@@ -65,8 +75,6 @@ function AddForm({ onAddingTask } : { onAddingTask: (task: Omit<Todo, 'id'>) => 
     });
 
     setTaskText("");
-    setCatogory("personal");
-    setPriority("medium");
   }
 
   const isInputValueEmpty = taskText.trim() === "";
@@ -199,7 +207,8 @@ function Task({
   text,
   category,
   priority,
-  onTaskfinish
+  onTaskfinish,
+  onDelete,
 }: TaskProps) {
 
   let priorityText: string;
@@ -252,6 +261,7 @@ function Task({
       <form 
         action=""
         className='bg-white border border-gray-400 px-3 py-6 rounded-xl'
+        onSubmit={(e) => e.preventDefault()}
       >
         <article className={clsx(
           `flex justify-between items-center transition-opacity duration-200`,
@@ -302,7 +312,10 @@ function Task({
             <button className='p-2 rounded-sm hover:bg-gray-300 cursor-pointer'>
               <Pencil size={20} className='font-semibold'  />
             </button>
-            <button className='p-2 rounded-sm hover:bg-gray-300 cursor-pointer'>
+            <button 
+              className='p-2 rounded-sm hover:bg-gray-300 cursor-pointer'
+              onClick={() => onDelete(id)}
+            >
               <X size={20} className='font-semibold text-red-600' />
             </button>
           </div>
@@ -363,6 +376,10 @@ function EmptySate({
 
 function App() {
   const [tasks, setTasks] = useState<Todo[]>([]);
+  
+  const finishedTasks = tasks.filter((task) => task.isDone === true);
+  const progressValue =(finishedTasks.length/tasks.length)*100
+
 
   // Ajout d'une tache
   function addTask( task: Omit<Todo, 'id'>) {
@@ -373,7 +390,7 @@ function App() {
     setTasks([...tasks, newTask]);
   }
 
-  function finishTask(id: number) {
+  function handleFinishTask(id: number) {
     const editedTasks = tasks.map( task => {
       if (task.id === id) {
         return {...task, isDone: !task.isDone};
@@ -385,11 +402,19 @@ function App() {
     setTasks(editedTasks)
   }
 
+  function deleteTask(id: number) {
+    const newTasks = tasks.filter( task => task.id !== id);
+    setTasks(newTasks);
+  }
+
   return (
     <main className='bg-slate-50 min-h-dvh py-6'>
       <div className="container">
         <div>
-          <Header  />
+          <Header 
+            completedTaskNumber={finishedTasks.length} 
+            totalTasksNumber={tasks.length}
+          />
           <AddForm onAddingTask={addTask}  />
           <SearchForm  />
         </div>
@@ -406,14 +431,15 @@ function App() {
                     text={task.text}
                     category={task.category}
                     priority={task.priority}
-                    onTaskfinish={finishTask}
+                    onTaskfinish={handleFinishTask}
+                    onDelete={deleteTask}
                   />
                 </li>
               ))}
             </ul>
 
             <div>
-              <ProgressBar progress={33}  />
+              <ProgressBar progress={Math.round(progressValue)}  />
             </div>
         </div>}
       </div>
