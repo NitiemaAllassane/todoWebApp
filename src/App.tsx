@@ -15,10 +15,15 @@ type TaskCategories = "personal" | "work" | "shopping" | "health";
 type TaskPriority = "low" | "medium" | "high";
 
 interface Todo {
+  id: number;
   isDone: boolean;
   text: string;
   category: TaskCategories;
   priority: TaskPriority;
+}
+
+interface TaskProps extends Todo {
+   onTaskfinish: (id: number) => void;
 }
 
 
@@ -45,7 +50,7 @@ function Header() {
 }
 
 
-function AddForm({ onAddingTask } : { onAddingTask: (task: Todo) => void }) {
+function AddForm({ onAddingTask } : { onAddingTask: (task: Omit<Todo, 'id'>) => void }) {
   const [taskText, setTaskText ] = useState("");
   const [category, setCatogory ] = useState<TaskCategories>("personal");
   const [priority, setPriority ] = useState<TaskPriority>("medium");
@@ -189,11 +194,13 @@ function SearchForm() {
 
 
 function Task({
+  id,
   isDone,
   text,
   category,
-  priority
-}: Todo) {
+  priority,
+  onTaskfinish
+}: TaskProps) {
 
   let priorityText: string;
   let categorieText: string;
@@ -246,7 +253,10 @@ function Task({
         action=""
         className='bg-white border border-gray-400 px-3 py-6 rounded-xl'
       >
-        <article className='flex justify-between items-center'>
+        <article className={clsx(
+          `flex justify-between items-center transition-opacity duration-200`,
+          isDone && "opacity-55"
+        )}>
           <div className='flex items-center gap-6'>
             <div>
               <input 
@@ -254,12 +264,19 @@ function Task({
                 name="doneTask" 
                 id="doneTask" 
                 checked={isDone}
+                onChange={() => onTaskfinish(id)}
                 className='w-5 h-5'
               />
             </div>
 
             <div>
-              <p className='mb-3'>{text}</p>
+              <p 
+                className={clsx(
+                'mb-3',
+                isDone && "line-through text-gray-400"
+              )}>
+                {text}
+              </p>
               <div className='flex items-center gap-4'>
                 <span 
                   className='text-xs font-semibold border 
@@ -347,10 +364,25 @@ function EmptySate({
 function App() {
   const [tasks, setTasks] = useState<Todo[]>([]);
 
-  function addTask( task: Todo) {
-    const newTasks = tasks.slice();
-    newTasks.push(task);
-    setTasks(newTasks);
+  // Ajout d'une tache
+  function addTask( task: Omit<Todo, 'id'>) {
+    const newTask: Todo = {
+      ...task,
+      id: Date.now(),
+    }
+    setTasks([...tasks, newTask]);
+  }
+
+  function finishTask(id: number) {
+    const editedTasks = tasks.map( task => {
+      if (task.id === id) {
+        return {...task, isDone: !task.isDone};
+      } else {
+        return task;
+      }
+    });
+
+    setTasks(editedTasks)
   }
 
   return (
@@ -366,13 +398,15 @@ function App() {
           ? <EmptySate message="Ajoutez votre première tâche pour commencer !"  />
           : <div>
             <ul className='flex flex-col gap-3 mb-6'>
-              {tasks.map( (task, id) => (
-                <li key={id}>
+              {tasks.map( (task) => (
+                <li key={task.id}>
                   <Task  
+                    id={task.id}
                     isDone={task.isDone}
                     text={task.text}
                     category={task.category}
                     priority={task.priority}
+                    onTaskfinish={finishTask}
                   />
                 </li>
               ))}
