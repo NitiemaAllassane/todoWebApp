@@ -1,3 +1,4 @@
+import { useState, type ChangeEvent } from 'react';
 import './App.css';
 import { 
   Plus, 
@@ -7,7 +8,6 @@ import {
   X,
   Check
 } from 'lucide-react';
-
 import clsx from 'clsx';
 
 
@@ -45,13 +45,32 @@ function Header() {
 }
 
 
-function AddForm() {
-  
+function AddForm({ onAddingTask } : { onAddingTask: (task: Todo) => void }) {
+  const [taskText, setTaskText ] = useState("");
+  const [category, setCatogory ] = useState<TaskCategories>("personal");
+  const [priority, setPriority ] = useState<TaskPriority>("medium");
+
+  const handleAdding = (e: ChangeEvent) => {
+    e.preventDefault();
+    onAddingTask({
+      isDone: false,
+      text: taskText,
+      category: category,
+      priority: priority,
+    });
+
+    setTaskText("");
+    setCatogory("personal");
+    setPriority("medium");
+  }
+
+  const isInputValueEmpty = taskText.trim() === "";
 
   return (
     <form 
       action=""
       className='bg-white border border-gray-400 p-6 rounded-xl mb-8'
+      onSubmit={handleAdding}
     >
       <div>
         <div className='flex items-center gap-4 mb-4'>
@@ -62,12 +81,17 @@ function AddForm() {
             required
             placeholder='Ajouter une nouvelle tache...'
             className='flex-1 bg-gray-200 p-2 rounded-md focus:outline-indigo-400 focus:outline-3'
+            value={taskText}
+            onChange={(e) => setTaskText(e.target.value)}
           />
           <button 
             type="submit"
-            disabled
-            className='flex items-center gap-2 bg-gray-400 text-white py-1.5 px-2 rounded-md
-            cursor-pointer'
+            disabled={isInputValueEmpty}
+            className={clsx(
+              `flex items-center gap-2 bg-black text-white py-1.5 px-2 rounded-md
+            cursor-pointer`,
+            isInputValueEmpty && "bg-gray-400"
+            )}
           >
             <Plus  />
             Ajouter
@@ -87,6 +111,8 @@ function AddForm() {
               name="taskCategories" 
               id="taskCategories"
               className='p-1 border border-gray-400 rounded-md'
+              value={category}
+              onChange={(e) => setCatogory(e.target.value as TaskCategories)}
             >
               <option value="personal">Personnel</option>
               <option value="work">Travail</option>
@@ -107,6 +133,8 @@ function AddForm() {
               name="taskPriorities" 
               id="taskPriorities"
               className='p-1 border border-gray-400 rounded-md'
+              value={priority}
+              onChange={(e) => setPriority(e.target.value as TaskPriority)}
             >
               <option value="low">Faible</option>
               <option value="medium">Moyenne</option>
@@ -314,46 +342,46 @@ function EmptySate({
   )
 }
 
+
+
 function App() {
+  const [tasks, setTasks] = useState<Todo[]>([]);
+
+  function addTask( task: Todo) {
+    const newTasks = tasks.slice();
+    newTasks.push(task);
+    setTasks(newTasks);
+  }
 
   return (
     <main className='bg-slate-50 min-h-dvh py-6'>
       <div className="container">
         <div>
           <Header  />
-          <AddForm  />
+          <AddForm onAddingTask={addTask}  />
           <SearchForm  />
         </div>
-        <div>
-          <div className='flex flex-col gap-3 mb-6'>
-            <Task  
-              isDone={false}
-              text="Creation  d'une App de gestion des taches"
-              category="health"
-              priority="high"
-            />
 
-            <Task  
-              isDone={false}
-              text="Creation  d'une App de gestion des taches"
-              category="personal"
-              priority="medium"
-            />
+        {tasks.length === 0 
+          ? <EmptySate message="Ajoutez votre première tâche pour commencer !"  />
+          : <div>
+            <ul className='flex flex-col gap-3 mb-6'>
+              {tasks.map( (task, id) => (
+                <li key={id}>
+                  <Task  
+                    isDone={task.isDone}
+                    text={task.text}
+                    category={task.category}
+                    priority={task.priority}
+                  />
+                </li>
+              ))}
+            </ul>
 
-            <Task  
-              isDone={false}
-              text="Creation  d'une App de gestion des taches"
-              category="shopping"
-              priority="low"
-            />
-          </div>
-
-          <div>
-            <ProgressBar progress={33}  />
-          </div>
-        </div>
-
-        {/* <EmptySate message="Ajoutez votre première tâche pour commencer !"  /> */}
+            <div>
+              <ProgressBar progress={33}  />
+            </div>
+        </div>}
       </div>
     </main>
   );
