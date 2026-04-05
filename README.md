@@ -1,73 +1,128 @@
-# React + TypeScript + Vite
+# Todo App – React + TypeScript
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Une application moderne de gestion de tâches développée avec **React**, **TypeScript** et **Tailwind CSS**.
+Elle permet d’ajouter, modifier, supprimer et filtrer des tâches avec une interface simple et efficace.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Demo en ligne
 
-## React Compiler
+[Decouvrez l'application en ligne](https://todo-nit.vercel.app/)
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Fonctionnalités
 
-## Expanding the ESLint configuration
+* Ajouter une tâche
+*  Modifier une tâche
+* Supprimer une tâche
+*  Marquer une tâche comme terminée
+*  Rechercher des tâches
+*  Filtrer par catégorie
+*  Barre de progression dynamique
+*  Gestion des états vides (Empty State)
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+---
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## 🛠️ Technologies utilisées
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+* React
+*  TypeScript
+*  Tailwind CSS
+*  Lucide Icons
+*  clsx (gestion des classes conditionnelles)
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+---
+
+## Structure du projet
+Vous pouvez refactoriser le projet pour faire ressembler le projet a ceci:
+
+```
+src/
+│── components/
+│   ├── Header.tsx
+│   ├── AddForm.tsx
+│   ├── SearchForm.tsx
+│   ├── Task.tsx
+│   ├── ProgressBar.tsx
+│   └── EmptyState.tsx
+│
+│── App.tsx
+│── main.tsx
+│── index.css
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+---
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Installation
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+1. Cloner le projet :
+
+```bash
+git clone https://github.com/NitiemaAllassane/todoWebApp
 ```
+
+2. Installer les dépendances :
+
+```bash
+pnpm install
+```
+
+3. Lancer le projet :
+
+```bash
+pnpm run dev
+```
+
+---
+
+##  Logique clé
+
+* Utilisation de `useState` pour gérer les tâches
+* Manipulation des tableaux avec :
+
+  * `map` → modification
+  * `filter` → suppression / recherche
+* Filtres combinés (recherche + catégorie)
+* UI conditionnelle (Empty state vs liste)
+
+---
+
+## Objectif du projet
+
+Ce projet a été réalisé dans le but de :
+
+* pratiquer React et TypeScript
+* comprendre la gestion d’état
+* manipuler des données dynamiques
+* construire une UI propre et maintenable
+
+---
+
+## Améliorations possibles
+
+* Sauvegarde avec `localStorage`
+*  Mode sombre
+*  Ajout de date de création
+*  Drag & drop des tâches
+*  Notifications / rappels
+*  Effets sonore quand on termine une tache
+
+---
+
+## Aperçu
+
+![texte alternatif](./src/assets/todoNitDesktopEmpty.png)
+![texte alternatif](./src/assets/todoEmptyMobile.png)
+![texte alternatif](./src/assets/todoFill.png)
+![texte alternatif](./src/assets/todoFillMobile.png)
+
+---
+
+## Auteur
+
+Développé par [Nitiema Allassane](https://nitiema-allassane.vercel.app/about)
+
+---
+
+## 📄 Licence
+
+Ce projet est open-source et libre d’utilisation.
