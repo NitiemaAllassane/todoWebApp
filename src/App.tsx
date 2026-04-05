@@ -13,6 +13,7 @@ import clsx from 'clsx';
 
 type TaskCategories = "personal" | "work" | "shopping" | "health";
 type TaskPriority = "low" | "medium" | "high";
+type SearchCategories = "allCategorie" | "personal" | "work" | "shopping" | "health";
 
 interface Todo {
   id: number;
@@ -171,7 +172,17 @@ function AddForm({ onAddingTask } : { onAddingTask: (task: Omit<Todo, 'id'>) => 
 }
 
 
-function SearchForm() {
+function SearchForm({ 
+  searchValue, 
+  categoriesValue,
+  onSearchValueChange, 
+  filterByCategorie 
+}: { 
+  searchValue: string;
+  categoriesValue: SearchCategories;
+  onSearchValueChange: (value: string) => void;
+  filterByCategorie: (text: SearchCategories) => void;
+}) {
   
   return (
     <form action="" className='mb-6'>
@@ -189,6 +200,8 @@ function SearchForm() {
             id="taskSearch" 
             placeholder='Rechercher des tâches...'
             className='w-full outline-none'
+            value={searchValue}
+            onChange={(e) => onSearchValueChange(e.target.value)}
           />
         </div>
 
@@ -196,8 +209,14 @@ function SearchForm() {
           <span>
             <Funnel size={20} className='text-gray-500' />
           </span>
-          <select name="filter" id="filter" className='p-1 border border-gray-400 rounded-md'>
-            <option value="allCategories">Toutes les categories</option>
+          <select 
+            name="filter" 
+            id="filter" 
+            className='p-1 border border-gray-400 rounded-md'
+            value={categoriesValue}
+            onChange={(e) => filterByCategorie(e.target.value as SearchCategories)}
+          >
+            <option value="allCategorie">Toutes les categories</option>
             <option value="personal">Personnel</option>
             <option value="work">Travail</option>
             <option value="shopping">Courses</option>
@@ -490,9 +509,29 @@ function Footer() {
 
 function App() {
   const [tasks, setTasks] = useState<Todo[]>([]);
+  const [searchValue, setSearchValue] = useState("");
+  const [categoryValue, setCategoryValue] = useState<SearchCategories>("allCategorie");
   
   const finishedTasks = tasks.filter((task) => task.isDone === true);
-  const progressValue =(finishedTasks.length/tasks.length)*100
+  const progressValue =(finishedTasks.length/tasks.length)*100;
+
+  // Filtre des taches
+  const searchResults =  tasks.filter(task => {
+    // filtre texte
+    if (searchValue.trim() !== "") {
+      return task.text.toLowerCase().includes(searchValue.toLowerCase());
+    }
+    return true;
+  }).filter(task => {
+    // filtre catégorie
+    if (categoryValue !== "allCategorie") {
+      return task.category === categoryValue;
+    }
+    return true;
+  });
+
+  const isEmpty = tasks.length === 0;
+  const noResults = searchResults.length === 0;
 
 
   // Ajout d'une tache
@@ -504,6 +543,7 @@ function App() {
     setTasks([...tasks, newTask]);
   }
 
+  // Gerer l'etat de finission d'une tache
   function handleFinishTask(id: number) {
     const editedTasks = tasks.map( task => {
       if (task.id === id) {
@@ -516,11 +556,13 @@ function App() {
     setTasks(editedTasks)
   }
 
+  // Supprimer une tache
   function deleteTask(id: number) {
     const newTasks = tasks.filter( task => task.id !== id);
     setTasks(newTasks);
   }
 
+  // Modifier une tache
   function editTask(id: number, text: string) {
     const newTasks = tasks.map( task => {
       if (task.id === id) {
@@ -543,14 +585,27 @@ function App() {
               totalTasksNumber={tasks.length}
             />
             <AddForm onAddingTask={addTask}  />
-            <SearchForm  />
+            <SearchForm  
+              searchValue={searchValue}
+              categoriesValue={categoryValue}
+              onSearchValueChange={setSearchValue}
+              filterByCategorie={setCategoryValue}
+            />
           </div>
 
-          {tasks.length === 0 
-            ? <EmptySate message="Ajoutez votre première tâche pour commencer !"  />
-            : <div>
+          {isEmpty ? (
+            <EmptySate message="Ajoutez votre première tâche pour commencer !" />
+          ) : noResults ? (
+            <>
+              <div className='mb-6'>
+                <EmptySate message="Essayez de modifier votre recherche." />
+              </div>
+              <ProgressBar progress={Math.round(progressValue)} />
+            </>
+          ) : (
+            <>
               <ul className='flex flex-col gap-3 mb-6'>
-                {tasks.map( (task) => (
+                {searchResults.map(task => (
                   <li key={task.id}>
                     <Task  
                       id={task.id}
@@ -566,10 +621,9 @@ function App() {
                 ))}
               </ul>
 
-              <div>
-                <ProgressBar progress={Math.round(progressValue)}  />
-              </div>
-          </div>}
+              <ProgressBar progress={Math.round(progressValue)} />
+            </>
+          )}
         </div>
       </main>
 
