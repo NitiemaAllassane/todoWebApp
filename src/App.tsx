@@ -217,15 +217,15 @@ function Task({
   // Restriction des priorité
   switch (priority) {
     case "high":
-      priorityText = "Elevée";
+      priorityText = "elevée";
       break;
 
     case "low":
-      priorityText = "Faible";
+      priorityText = "faible";
       break;
     
     case "medium":
-      priorityText = "Moyenne";
+      priorityText = "moyenne";
       break;
   
     default:
