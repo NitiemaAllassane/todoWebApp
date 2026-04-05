@@ -50,15 +50,15 @@ function Header({
     <header className='mb-8'>
       <div className='text-center'>
         <h1 
-          className='text-4xl font-bold bg-linear-to-r from-indigo-500 to-purple-700 
+          className='text-3xl md:text-4xl font-bold bg-linear-to-r from-indigo-500 to-purple-700 
           bg-clip-text text-transparent mb-1'
         >
           Ma liste de tâches
         </h1>
-        <p className='text-gray-500 text-lg mb-1'>
+        <p className='text-gray-500 md:text-lg mb-1'>
           Organisez-vous et restez productif
         </p>
-        <p className='text-gray-500 text-lg'>
+        <p className='text-gray-500 md:text-lg'>
           <span>
             {`${completedTaskNumber} ${completedTaskNumber <= 1 ? "tâche terminée" : "tâches terminées"}`} 
             <span className='font-extrabold mx-2'>.</span>   
@@ -97,14 +97,14 @@ function AddForm({ onAddingTask } : { onAddingTask: (task: Omit<Todo, 'id'>) => 
       onSubmit={handleAdding}
     >
       <div>
-        <div className='flex items-center gap-4 mb-4'>
+        <div className='flex flex-col md:flex-row items-center gap-4 mb-4'>
           <input 
             type="text" 
             name="task" 
             id="task" 
             required
             placeholder='Ajouter une nouvelle tache...'
-            className='flex-1 bg-gray-200 p-2 rounded-md focus:outline-indigo-400 focus:outline-3'
+            className='md:flex-1 w-full md:w-auto bg-gray-200 p-2 rounded-md focus:outline-indigo-400 focus:outline-3'
             value={taskText}
             onChange={(e) => setTaskText(e.target.value)}
           />
@@ -112,7 +112,7 @@ function AddForm({ onAddingTask } : { onAddingTask: (task: Omit<Todo, 'id'>) => 
             type="submit"
             disabled={isInputValueEmpty}
             className={clsx(
-              `flex items-center gap-2 bg-black text-white py-1.5 px-2 rounded-md`,
+              `flex items-center gap-2 bg-black text-white w-full md:w-auto py-1.5 px-2 rounded-md`,
             isInputValueEmpty ? "bg-gray-400 cursor-not-allowed" : "cursor-pointer"
             )}
           >
@@ -186,10 +186,10 @@ function SearchForm({
   
   return (
     <form action="" className='mb-6'>
-      <search className='flex items-center gap-4'>
+      <search className='flex flex-col md:flex-row items-center gap-4'>
         <div 
-          className='flex items-center gap-1 flex-1 bg-gray-200 p-2 rounded-md
-          focus-within:ring-2 focus-within:ring-indigo-400'
+          className='flex flex-1 items-center gap-1 bg-gray-200 p-2 rounded-md
+          focus-within:ring-2 focus-within:ring-indigo-400 w-full md:w-auto'
         >
           <span>
             <Search size={20} className='text-gray-500'  />
@@ -205,14 +205,14 @@ function SearchForm({
           />
         </div>
 
-        <div className='flex items-center gap-3'>
+        <div className='flex items-center gap-3 w-full md:w-auto'>
           <span>
             <Funnel size={20} className='text-gray-500' />
           </span>
           <select 
             name="filter" 
             id="filter" 
-            className='p-1 border border-gray-400 rounded-md'
+            className='p-1 border border-gray-400 rounded-md w-full md:w-auto'
             value={categoriesValue}
             onChange={(e) => filterByCategorie(e.target.value as SearchCategories)}
           >
@@ -301,7 +301,7 @@ function Task({
     <>
       <form 
         action=""
-        className='bg-white border border-gray-400 px-3 py-6 rounded-xl'
+        className='bg-white border border-gray-400 px-2 py-3 md:px-3 md:py-6 rounded-xl'
         onSubmit={(e) => e.preventDefault()}
       >
         {!isOnEdit 
@@ -309,7 +309,7 @@ function Task({
           `flex justify-between items-center transition-opacity duration-200`,
           isDone && "opacity-55"
         )}>
-          <div className='flex items-center gap-6'>
+          <div className='flex items-center gap-3 md:gap-6'>
             <div>
               <input 
                 type="checkbox" 
@@ -350,15 +350,15 @@ function Task({
             </div>
           </div>
 
-          <div className='flex items-center gap-2'>
+          <div className='flex items-center gap-0.5 md:gap-2'>
             <button 
-              className='p-2 rounded-sm hover:bg-gray-300 cursor-pointer'
+              className='p-1 md:p-2 rounded-sm hover:bg-gray-300 cursor-pointer'
               onClick={switchToEdit}
             >
               <Pencil size={20} className='font-semibold'  />
             </button>
             <button 
-              className='p-2 rounded-sm hover:bg-gray-300 cursor-pointer'
+              className='p-1 md:p-2 rounded-sm hover:bg-gray-300 cursor-pointer'
               onClick={() => onDelete(id)}
             >
               <X size={20} className='font-semibold text-red-600' />
@@ -399,7 +399,7 @@ function TaskEditor({ taskId, isTaskDone, taskText, handleTaskFinish, editTask, 
           />
         </div>
         
-        <div className='flex flex-1 items-center gap-5'>
+        <div className='flex flex-1 items-center gap-2 md:gap-5'>
           <input 
             type="text" 
             name="editTask" 
@@ -409,9 +409,9 @@ function TaskEditor({ taskId, isTaskDone, taskText, handleTaskFinish, editTask, 
             onChange={(e) => setNewTaskText(e.target.value)}
           />
 
-          <div className='flex items-center gap-3'>
+          <div className='flex items-center gap-2 md:gap-3'>
             <button 
-              className='p-2 rounded-lg bg-black cursor-pointer'
+              className='p-1 md:p-2 rounded-lg bg-black cursor-pointer'
               onClick={() => {
                 editTask(taskId, newTaskText);
                 onCancel();
@@ -420,7 +420,7 @@ function TaskEditor({ taskId, isTaskDone, taskText, handleTaskFinish, editTask, 
               <Check size={20} className='font-semibold text-white'  />
             </button>
             <button 
-              className='p-2 rounded-lg border border-gray-300 hover:bg-gray-300 cursor-pointer'
+              className='p-1 md:p-2 rounded-lg border border-gray-300 hover:bg-gray-300 cursor-pointer'
               onClick={onCancel}
             >
               <X size={20} className='font-semibold text-black' />
@@ -474,7 +474,7 @@ function EmptySate({
         <Check size={48} className='text-gray-500'  />
       </div>
       <h3 className='text-gray-600'>Aucune tâche trouvée</h3>
-      <p className='text-gray-600'>{message}</p>
+      <p className='text-gray-600 text-center'>{message}</p>
     </div>
   )
 }
