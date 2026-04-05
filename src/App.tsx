@@ -25,8 +25,18 @@ interface Todo {
 interface TaskProps extends Todo {
   onTaskfinish: (id: number) => void;
   onDelete: (id: number) => void;
+  onEdit: (id: number, text: string) => void;
 }
 
+
+interface TaskEditorProps {
+  taskId: number;
+  isTaskDone: boolean;
+  taskText: string;
+  handleTaskFinish: (id: number) => void;
+  editTask: (id: number, text: string) => void;
+  onCancel: () => void;
+}
 
 function Header({ 
   completedTaskNumber, 
@@ -208,10 +218,23 @@ function Task({
   priority,
   onTaskfinish,
   onDelete,
+  onEdit,
 }: TaskProps) {
+
+  const [isOnEdit, setIsOnEdit] = useState(false);
 
   let priorityText: string;
   let categorieText: string;
+
+  function switchToEdit() {
+    if (isOnEdit) return;
+    setIsOnEdit(true);
+  }
+
+  function switchToDisplay() {
+    if (!isOnEdit) return;
+    setIsOnEdit(false);
+  }
 
   // Restriction des priorité
   switch (priority) {
@@ -262,7 +285,8 @@ function Task({
         className='bg-white border border-gray-400 px-3 py-6 rounded-xl'
         onSubmit={(e) => e.preventDefault()}
       >
-        <article className={clsx(
+        {!isOnEdit 
+        ? <article className={clsx(
           `flex justify-between items-center transition-opacity duration-200`,
           isDone && "opacity-55"
         )}>
@@ -308,7 +332,10 @@ function Task({
           </div>
 
           <div className='flex items-center gap-2'>
-            <button className='p-2 rounded-sm hover:bg-gray-300 cursor-pointer'>
+            <button 
+              className='p-2 rounded-sm hover:bg-gray-300 cursor-pointer'
+              onClick={switchToEdit}
+            >
               <Pencil size={20} className='font-semibold'  />
             </button>
             <button 
@@ -319,8 +346,70 @@ function Task({
             </button>
           </div>
         </article>
+        : <TaskEditor  
+          taskId={id}
+          isTaskDone={isDone}
+          taskText={text}
+          handleTaskFinish={onTaskfinish}
+          onCancel={switchToDisplay}
+          editTask={onEdit}
+        />}
       </form>
     </>
+  )
+}
+
+
+function TaskEditor({ taskId, isTaskDone, taskText, handleTaskFinish, editTask, onCancel}: TaskEditorProps) {
+  const [newTaskText, setNewTaskText] = useState(taskText)
+  
+  return (
+    <article className={clsx(
+          `transition-opacity duration-200`,
+          isTaskDone && "opacity-55"
+        )}>
+      <div className='flex items-center gap-3'>
+        <div>
+          <input 
+            type="checkbox" 
+            name="doneTask" 
+            id="doneTask" 
+            checked={isTaskDone}
+            onChange={() => handleTaskFinish(taskId)}
+            className='w-5 h-5'
+          />
+        </div>
+        
+        <div className='flex flex-1 items-center gap-5'>
+          <input 
+            type="text" 
+            name="editTask" 
+            id="editTask" 
+            className='w-full py-1 px-2 bg-gray-200 rounded-md focus:outline-3 focus:outline-indigo-400'
+            value={newTaskText}
+            onChange={(e) => setNewTaskText(e.target.value)}
+          />
+
+          <div className='flex items-center gap-3'>
+            <button 
+              className='p-2 rounded-lg bg-black cursor-pointer'
+              onClick={() => {
+                editTask(taskId, newTaskText);
+                onCancel();
+              }}
+            >
+              <Check size={20} className='font-semibold text-white'  />
+            </button>
+            <button 
+              className='p-2 rounded-lg border border-gray-300 hover:bg-gray-300 cursor-pointer'
+              onClick={onCancel}
+            >
+              <X size={20} className='font-semibold text-black' />
+            </button>
+          </div>
+        </div>
+      </div>
+    </article>
   )
 }
 
@@ -432,6 +521,18 @@ function App() {
     setTasks(newTasks);
   }
 
+  function editTask(id: number, text: string) {
+    const newTasks = tasks.map( task => {
+      if (task.id === id) {
+        return {...task, text}
+      }
+
+      return task;
+    });
+
+    setTasks(newTasks);
+  }
+
   return (
     <>
       <main className='bg-slate-50 min-h-dvh py-6 mb-12'>
@@ -459,6 +560,7 @@ function App() {
                       priority={task.priority}
                       onTaskfinish={handleFinishTask}
                       onDelete={deleteTask}
+                      onEdit={editTask}
                     />
                   </li>
                 ))}
