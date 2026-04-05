@@ -101,9 +101,8 @@ function AddForm({ onAddingTask } : { onAddingTask: (task: Omit<Todo, 'id'>) => 
             type="submit"
             disabled={isInputValueEmpty}
             className={clsx(
-              `flex items-center gap-2 bg-black text-white py-1.5 px-2 rounded-md
-            cursor-pointer`,
-            isInputValueEmpty && "bg-gray-400"
+              `flex items-center gap-2 bg-black text-white py-1.5 px-2 rounded-md`,
+            isInputValueEmpty ? "bg-gray-400 cursor-not-allowed" : "cursor-pointer"
             )}
           >
             <Plus  />
@@ -372,6 +371,32 @@ function EmptySate({
   )
 }
 
+function Footer() {
+  return (
+  <footer className='bg-gray-300 text-center py-4 '>
+    <div className="container">
+      <p>
+        &copy;2026 
+        <span 
+          className='font-bold bg-linear-to-r from-indigo-500 to-purple-700 
+          bg-clip-text text-transparent'
+        >Ma liste des taches</span>. Tous droit réservés.
+      </p>
+      <p>
+        Développé par 
+        <a 
+          href="https://nitiema-allassane.vercel.app/about" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className='underline'
+        >Nitiema Allassane
+        </a>
+      </p>
+    </div>
+  </footer>
+  )
+}
+
 
 
 function App() {
@@ -408,42 +433,46 @@ function App() {
   }
 
   return (
-    <main className='bg-slate-50 min-h-dvh py-6'>
-      <div className="container">
-        <div>
-          <Header 
-            completedTaskNumber={finishedTasks.length} 
-            totalTasksNumber={tasks.length}
-          />
-          <AddForm onAddingTask={addTask}  />
-          <SearchForm  />
+    <>
+      <main className='bg-slate-50 min-h-dvh py-6 mb-12'>
+        <div className="container">
+          <div>
+            <Header 
+              completedTaskNumber={finishedTasks.length} 
+              totalTasksNumber={tasks.length}
+            />
+            <AddForm onAddingTask={addTask}  />
+            <SearchForm  />
+          </div>
+
+          {tasks.length === 0 
+            ? <EmptySate message="Ajoutez votre première tâche pour commencer !"  />
+            : <div>
+              <ul className='flex flex-col gap-3 mb-6'>
+                {tasks.map( (task) => (
+                  <li key={task.id}>
+                    <Task  
+                      id={task.id}
+                      isDone={task.isDone}
+                      text={task.text}
+                      category={task.category}
+                      priority={task.priority}
+                      onTaskfinish={handleFinishTask}
+                      onDelete={deleteTask}
+                    />
+                  </li>
+                ))}
+              </ul>
+
+              <div>
+                <ProgressBar progress={Math.round(progressValue)}  />
+              </div>
+          </div>}
         </div>
+      </main>
 
-        {tasks.length === 0 
-          ? <EmptySate message="Ajoutez votre première tâche pour commencer !"  />
-          : <div>
-            <ul className='flex flex-col gap-3 mb-6'>
-              {tasks.map( (task) => (
-                <li key={task.id}>
-                  <Task  
-                    id={task.id}
-                    isDone={task.isDone}
-                    text={task.text}
-                    category={task.category}
-                    priority={task.priority}
-                    onTaskfinish={handleFinishTask}
-                    onDelete={deleteTask}
-                  />
-                </li>
-              ))}
-            </ul>
-
-            <div>
-              <ProgressBar progress={Math.round(progressValue)}  />
-            </div>
-        </div>}
-      </div>
-    </main>
+      <Footer  />
+    </>
   );
 }
 
